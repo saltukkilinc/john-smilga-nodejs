@@ -1,43 +1,23 @@
-const http = require("http");
-const {readFileSync} = require('fs')
+const express = require("express");
+const app = express();
 
-const homePage = readFileSync('./navbar-app/index.html')
-const homeCss = readFileSync('./navbar-app/styles.css')
-const homeLogo = readFileSync('./navbar-app/logo.svg')
-const homeLogic = readFileSync('./navbar-app/browser-app.js')
 
-const server = http.createServer((req, res) => {
-  const url = req.url;
+const peopleRouter = require("./router/people");
+const loginRouter = require("./router/auth");
 
-  if (url === "/") {
-    res.writeHead(200, { "content-type": "text/html" });
-    res.write(homePage);
-    res.end();
-  } else if (url === "/about") {
-    res.writeHead(200, { "content-type": "text/html" });
-    res.write("<h1>About Page</h1>");
-    res.end();
-  } 
-  else if (url === "/styles.css") {
-    res.writeHead(200, { "content-type": "text/css" });
-    res.write(homeCss);
-    res.end();
-  }
-  else if (url === "/logo.svg") {
-    res.writeHead(200, { "content-type": "image/svg+xml" });
-    res.write(homeLogo);
-    res.end();
-  }
-  else if (url === "/browser-app.js") {
-    res.writeHead(200, { "content-type": "text/javascript" });
-    res.write(homeLogic);
-    res.end();
-  }
-  else {
-    res.writeHead(404, { "content-type": "text/html" });
-    res.write("<h1> The page is not found</h1>");
-    res.end();
-  }
+app.use(express.static("./methods-public"));
+// to parse form data
+app.use(express.urlencoded({ extended: false }));
+// to parse incoming json
+app.use(express.json());
+// login router
+app.use("/login", loginRouter)
+// people router
+app.use("/api/people", peopleRouter);
+
+
+
+
+app.listen(5000, (req, res) => {
+  console.log("server is listen to port 5000");
 });
-
-server.listen(5000);
